@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cyber-bg: #5fa8d3; /* Light blue background as requested */
+  --cyber-card: #ffffff; /* Pure white card background */
+  --cyber-border: rgba(0, 0, 0, 0.15); /* Darker border for contrast on blue */
+  --cyber-primary-glow: rgba(99, 102, 241, 0.06);
+  --cyber-grid-line: rgba(0, 0, 0, 0.04);
+  --cyber-track-bg: #f1f5f9;
+  --cyber-thumb-bg: #cbd5e1;
+}
+
+/* Explicit classes for background resolving */
+.bg-cyber-bg {
+  background-color: var(--cyber-bg) !important;
+}
+.bg-cyber-card {
+  background-color: var(--cyber-card) !important;
+}
+.border-cyber-border {
+  border-color: var(--cyber-border) !important;
+}
+
+/* Light Mode - Black text overrides for standard grayscale texts */
+:root:not(.dark) .text-zinc-800,
+:root:not(.dark) .text-zinc-700,
+:root:not(.dark) .text-zinc-650,
+:root:not(.dark) .text-zinc-600,
+:root:not(.dark) .text-zinc-550,
+:root:not(.dark) .text-zinc-500,
+:root:not(.dark) .text-zinc-400,
+:root:not(.dark) .text-zinc-300,
+:root:not(.dark) .text-zinc-200,
+:root:not(.dark) .text-zinc-150,
+:root:not(.dark) .text-zinc-100,
+:root:not(.dark) .text-zinc-900,
+:root:not(.dark) .text-white {
+  color: #000000 !important;
+}
+
+/* Force navbar, sidebar, and body background in light mode to be #5fa8d3 */
+:root:not(.dark) nav,
+:root:not(.dark) aside,
+:root:not(.dark) body,
+:root:not(.dark) .bg-cyber-bg {
+  background-color: #5fa8d3 !important;
+  background: #5fa8d3 !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.dark {
+  --cyber-bg: #030712; /* Deepest space gray/black background */
+  --cyber-card: #0B0F19; /* Rich card gray */
+  --cyber-border: #1F2937; /* Thin border slate */
+  --cyber-primary-glow: rgba(99, 102, 241, 0.15);
+  --cyber-grid-line: rgba(255, 255, 255, 0.002);
+  --cyber-track-bg: #030712;
+  --cyber-thumb-bg: #1f2937;
+}
+
+@layer base {
+  body {
+    @apply bg-cyber-bg text-zinc-800 dark:text-zinc-100 antialiased font-sans selection:bg-cyber-primary/30 selection:text-white transition-colors duration-200;
+    background-image: 
+      radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.03) 0px, transparent 50%),
+      linear-gradient(var(--cyber-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--cyber-grid-line) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  }
+}
+
+/* Custom Cyber Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cyber-track-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cyber-thumb-bg);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+/* Glassmorphism Styles */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.dark .glass {
+  background: rgba(11, 15, 25, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.glass-hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 10px 30px -15px rgba(99, 102, 241, 0.15);
+}
+
+.dark .glass-hover:hover {
+  background: rgba(11, 15, 25, 0.85);
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 10px 30px -15px rgba(99, 102, 241, 0.3);
+}
+
+/* Code Diff Colors */
+.diff-added {
+  @apply bg-emerald-950/40 text-emerald-300 border-l-2 border-emerald-500;
+}
+
+.diff-removed {
+  @apply bg-red-950/40 text-red-300 border-l-2 border-red-500;
+}
+
+/* Print Styles for PDF Generation */
+@media print {
+  nav,
+  aside,
+  .no-print,
+  button,
+  form,
+  .fixed,
+  .floating-widget,
+  a[href^="http"]::after {
+    display: none !important;
+  }
+
+  body, 
+  #root,
+  main,
+  .print-area,
+  .animate-fade-in-up {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .print-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    grid-column: span 3 / span 3 !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .glass {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3, h4, h5, h6, span, p, div {
+    color: #000000 !important;
+  }
+
+  .text-cyber-danger, .bg-cyber-danger\/10 {
+    color: #ef4444 !important;
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
+  }
+
+  .text-cyber-warning, .bg-cyber-warning\/10 {
+    color: #f59e0b !important;
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    border-color: rgba(245, 158, 11, 0.2) !important;
+  }
+
+  .text-cyber-success, .bg-cyber-success\/10 {
+    color: #10b981 !important;
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(16, 185, 129, 0.2) !important;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+  
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  code, pre {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+}
+
+
