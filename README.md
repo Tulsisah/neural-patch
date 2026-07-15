@@ -1,5 +1,7 @@
 # NeuralPatch: AI-Powered DevSecOps SaaS Platform
 
+🌐 **Live Demo:** [https://neural-patch.vercel.app](https://neural-patch.vercel.app)
+
 NeuralPatch is a modern, real-time DevSecOps auditing platform that automatically scans repositories for security vulnerabilities, generates cryptographic threat ledgers, and engineers automated Git patches using AI to mitigate vulnerabilities.
 
 ---
