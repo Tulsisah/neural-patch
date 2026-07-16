@@ -26,7 +26,10 @@ export default function GithubCallback() {
 
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem('neuralpatch_token', data.token);
+          sessionStorage.setItem('neuralpatch_token', data.token);
+          if (data.user) {
+            sessionStorage.setItem('neuralpatch_user', JSON.stringify(data.user));
+          }
           window.location.href = '/dashboard';
         } else {
           console.error('Failed to exchange code');
