@@ -11,43 +11,62 @@ export default function RepoList({ refreshKey }) {
   const fetchActiveRepos = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('neuralpatch_token');
-      const response = await fetch(`${API_BASE_URL}/api/repos`, {
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` })
-        }
-      });
-      if (!response.ok) throw new Error('API failed');
-      const data = await response.json();
+      const token = sessionStorage.getItem('neuralpatch_token') || localStorage.getItem('neuralpatch_token');
       
-      const dbRepos = data.repos || [];
-      
-      // Default template repos to overlay active status
-      const defaultTemplates = [
-        { id: 'main-api-service', owner: 'org-admin', name: 'main-api-service', url: 'https://github.com/org-admin/main-api-service', connected: false, autoPatch: false, lastScan: 'Yesterday', health: 94, critical: 0, high: 1, scanning: false, scanCompleted: false },
-        { id: 'frontend-react-app', owner: 'org-admin', name: 'frontend-react-app', url: 'https://github.com/org-admin/frontend-react-app', connected: false, autoPatch: false, lastScan: '2 days ago', health: 82, critical: 1, high: 2, scanning: false, scanCompleted: false },
-        { id: 'infra-terraform-setup', owner: 'org-admin', name: 'infra-terraform-setup', url: 'https://github.com/org-admin/infra-terraform-setup', connected: false, autoPatch: false, lastScan: '-', health: 0, critical: 0, high: 0, scanning: false, scanCompleted: false },
-        { id: 'payment-gateway', owner: 'org-admin', name: 'payment-gateway', url: 'https://github.com/org-admin/payment-gateway', connected: false, autoPatch: false, lastScan: 'Just now', health: 100, critical: 0, high: 0, scanning: false, scanCompleted: false },
-      ];
+      const [dbRes, githubRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/repos`, {
+          headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+        }),
+        fetch(`${API_BASE_URL}/api/github/repos`, {
+          headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+        })
+      ]);
 
-      // Overlay database statuses on templates
-      const merged = defaultTemplates.map(tmpl => {
-        const active = dbRepos.find(r => r.name === tmpl.name);
+      if (!dbRes.ok || !githubRes.ok) throw new Error('API failed');
+      
+      const dbData = await dbRes.json();
+      const githubData = await githubRes.json();
+      
+      const dbRepos = dbData.repos || [];
+      const githubRepos = Array.isArray(githubData) ? githubData : [];
+
+      const merged = githubRepos.map(ghRepo => {
+        const active = dbRepos.find(r => r.name === ghRepo.name && r.owner === ghRepo.owner.login);
         if (active) {
           return {
-            ...tmpl,
+            id: ghRepo.id.toString(),
             dbId: active._id,
+            name: ghRepo.name,
+            owner: ghRepo.owner.login,
+            url: ghRepo.html_url,
             connected: true,
             autoPatch: active.isActive,
-            health: active.healthScore || tmpl.health,
+            health: active.healthScore || 100,
+            lastScan: 'Just now',
+            critical: 0,
+            high: 0,
+            scanning: false,
+            scanCompleted: false
           };
         }
-        return tmpl;
+        return {
+          id: ghRepo.id.toString(),
+          name: ghRepo.name,
+          owner: ghRepo.owner.login,
+          url: ghRepo.html_url,
+          connected: false,
+          autoPatch: false,
+          health: 0,
+          lastScan: '-',
+          critical: 0,
+          high: 0,
+          scanning: false,
+          scanCompleted: false
+        };
       });
 
-      // Append any custom connected repos from the DB
       dbRepos.forEach(active => {
-        if (!defaultTemplates.some(tmpl => tmpl.name === active.name)) {
+        if (!merged.some(m => m.name === active.name && m.owner === active.owner)) {
           merged.push({
             id: active._id,
             dbId: active._id,
@@ -68,14 +87,8 @@ export default function RepoList({ refreshKey }) {
 
       setRepos(merged);
     } catch (err) {
-      console.warn("Could not load backend repos, using mock fallback:", err);
-      // Fallback mocks
-      setRepos([
-        { id: 'main-api-service', dbId: '1', owner: 'org-admin', name: 'main-api-service', url: 'https://github.com/org-admin/main-api-service', connected: true, autoPatch: true, lastScan: 'Yesterday', health: 94, critical: 0, high: 1, scanning: false, scanCompleted: false },
-        { id: 'frontend-react-app', dbId: '2', owner: 'org-admin', name: 'frontend-react-app', url: 'https://github.com/org-admin/frontend-react-app', connected: true, autoPatch: false, lastScan: '2 days ago', health: 82, critical: 1, high: 2, scanning: false, scanCompleted: false },
-        { id: 'infra-terraform-setup', dbId: '3', owner: 'org-admin', name: 'infra-terraform-setup', url: 'https://github.com/org-admin/infra-terraform-setup', connected: false, autoPatch: false, lastScan: '-', health: 0, critical: 0, high: 0, scanning: false, scanCompleted: false },
-        { id: 'payment-gateway', dbId: '4', owner: 'org-admin', name: 'payment-gateway', url: 'https://github.com/org-admin/payment-gateway', connected: true, autoPatch: true, lastScan: 'Just now', health: 100, critical: 0, high: 0, scanning: false, scanCompleted: false },
-      ]);
+      console.warn("Could not load backend repos:", err);
+      setRepos([]);
     } finally {
       setLoading(false);
     }

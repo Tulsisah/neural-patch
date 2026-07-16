@@ -65,7 +65,7 @@ export default function Settings() {
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="w-full bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 focus:border-cyber-primary rounded-xl px-3 py-2.5 text-xs text-zinc-800 dark:text-white focus:outline-none transition-all"
+                  className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:border-cyber-primary rounded-xl px-3 py-2.5 text-xs text-zinc-800 dark:text-white focus:outline-none transition-all"
                 >
                   <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recommended)</option>
                   <option value="gemini-2.5-pro">Gemini 2.5 Pro (Precise)</option>
